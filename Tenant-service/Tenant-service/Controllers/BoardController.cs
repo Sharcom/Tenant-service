@@ -32,14 +32,14 @@ namespace Tenant_service.Controllers
         [ProducesResponseType(StatusCodes.Status201Created ,Type = typeof(Board))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]        
         [Authorize]
-        public IActionResult Create(BoardRestricted board)
+        public async Task<IActionResult> Create(BoardRestricted board)
         {
             TenantDTO _dto = board.ToDTO();
             _dto.Administrators = new List<string>() { AuthorizationHelper.GetRequestSub(Request) };
             _dto.Members = new List<string>() { AuthorizationHelper.GetRequestSub(Request) };
 
             TenantDTO? createdBoard = tenantCollection.Create(_dto);
-            if (createdBoard != null)
+            if (createdBoard != null && createdBoard.ID != null)
             {
                 Dictionary<string, object> dict = new Dictionary<string, object>();
                 dict.Add("id", createdBoard.ID);
@@ -47,18 +47,17 @@ namespace Tenant_service.Controllers
 
                 Message message = new Message(dict, MessageType.EVENT, Assembly.GetExecutingAssembly().GetName().Name) ;
                 sender.Send(message, "CREATE_BOARD");
-                return Created($"/{createdBoard.ID}", new Board(createdBoard));
+                
             }                
             else
                 return BadRequest("The board could not be created");
-        }
 
-        [HttpGet]
-        public async Task<IActionResult> AddMember(int boardID, string member)
-        {
-            if (managementAPIConfig != null)
-                Console.WriteLine(await AuthorizationHelper.GetManagementToken(managementAPIConfig));
-            return BadRequest();
+
+            // Auth0 
+            await AuthorizationHelper.AddAdminToBoard(managementAPIConfig, AuthorizationHelper.GetRequestSub(Request), createdBoard.ID ?? 0);
+            
+
+            return Created($"/{createdBoard.ID}", new Board(createdBoard));
         }
     }
 }

@@ -87,7 +87,7 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddSingleton<IAuthorizationHandler, Tenant_service.AuthConfig.HasScopeHandler>();
-builder.Services.AddSingleton(new ManagementAPIConfig() { Audiance = builder.Configuration["Auth0:Audiance"], Domain = builder.Configuration["Auth0:Domain"], ClientID = builder.Configuration["Auth0:ManagementAPI:ClientID"], ClientSecret = builder.Configuration["Auth0:ManagementAPI:ClientSecret"] });
+builder.Services.AddSingleton(new ManagementAPIConfig() { Audience = builder.Configuration["Auth0:Audience"], Domain = builder.Configuration["Auth0:Domain"], ClientID = builder.Configuration["Auth0:ManagementAPI:ClientID"], ClientSecret = builder.Configuration["Auth0:ManagementAPI:ClientSecret"] });
 
 
 // Messenger configuration
