@@ -45,6 +45,6 @@ namespace Tenant_service.AuthConfig
         public string ClientID { get; set; }
         public string ClientSecret { get; set; }
         public string Domain { get; set; }
-        public string Audiance { get; set; }
+        public string Audience { get; set; }
     }
 }
